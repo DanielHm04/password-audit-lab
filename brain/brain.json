@@ -1,0 +1,25 @@
+{
+  "backend": "claude-code",
+  "backends": {
+    "claude-code": {
+      "type": "interactive",
+      "enabled": true,
+      "note": "Default. You drive it in the terminal via `claude`. No API cost (uses your subscription). Needs internet."
+    },
+    "api": {
+      "type": "api",
+      "enabled": false,
+      "provider": "anthropic",
+      "model": "claude-opus-5",
+      "api_key_env": "ANTHROPIC_API_KEY",
+      "note": "Future. Flip enabled=true, set the env var, add brain/adapter_api.py. See docs/BRAIN-ADAPTER.md."
+    },
+    "ollama": {
+      "type": "local",
+      "enabled": false,
+      "endpoint": "http://localhost:11434",
+      "model": "llama3.1",
+      "note": "Offline intelligence. Flip enabled=true after installing Ollama + a model, add brain/adapter_ollama.py."
+    }
+  }
+}

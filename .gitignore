@@ -1,0 +1,35 @@
+# Never commit cracked material, hashes, or wordlists. This is permanent.
+# ---- hashes / inputs ----
+hashes/
+*.ntds
+*.sam
+*.secretsdump
+*.hash
+*.hashes
+# ---- cracked output / loot ----
+loot/
+*.pot
+*.potfile
+cracked.pot
+*.jsonl
+trophy*.json*
+# ---- wordlists / rules corpora (large + sensitive) ----
+wordlists/
+*.wordlist
+rockyou*.txt
+weakpass*
+*.hcmask
+hibp*.txt
+pwned*.txt
+# keep the small self-mined demo ruleset header, ignore mined logs
+learned-rules.jsonl
+# ---- engines / binaries (not ours to redistribute) ----
+hashcat/
+john/
+tools/
+*.exe
+# ---- python / os ----
+__pycache__/
+*.pyc
+.pytest_cache/
+.DS_Store

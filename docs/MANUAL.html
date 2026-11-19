@@ -1,0 +1,638 @@
+<title>CrackLab Field Manual</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root{
+  /* LIGHT palette (complete) */
+  --ground:#EDEFF2; --panel:#FFFFFF; --panel2:#F4F6F8; --raise:#FBFCFD;
+  --ink:#161A21; --muted:#586170; --faint:#8892A0; --line:#E1E5EA; --line2:#EDF0F3;
+  --accent:#B15E20; --accent-ink:#FFFFFF; --accent-dim:#B15E2018;
+  --ok:#1E9C68; --warn:#A9781F; --crit:#CF3B57; --info:#2A72B8;
+  --ok-bg:#1E9C6814; --warn-bg:#A9781F14; --crit-bg:#CF3B5714; --info-bg:#2A72B814;
+  --shadow:0 1px 2px rgba(20,25,35,.06),0 8px 24px rgba(20,25,35,.06);
+  --mono:"Cascadia Code","JetBrains Mono","SF Mono","Consolas","Liberation Mono",ui-monospace,monospace;
+  --sans:"Segoe UI Variable Text","Segoe UI",system-ui,-apple-system,Roboto,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --ground:#0F131A; --panel:#161B23; --panel2:#1C222C; --raise:#20272F;
+  --ink:#E7EAEF; --muted:#98A2B0; --faint:#636D7B; --line:#28303B; --line2:#1E242D;
+  --accent:#E68A4D; --accent-ink:#161206; --accent-dim:#E68A4D1F;
+  --ok:#47C08D; --warn:#E5B34D; --crit:#ED6379; --info:#5FA9E0;
+  --ok-bg:#47C08D18; --warn-bg:#E5B34D16; --crit-bg:#ED637916; --info-bg:#5FA9E016;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 12px 32px rgba(0,0,0,.35);
+}}
+:root[data-theme="dark"]{
+  --ground:#0F131A; --panel:#161B23; --panel2:#1C222C; --raise:#20272F;
+  --ink:#E7EAEF; --muted:#98A2B0; --faint:#636D7B; --line:#28303B; --line2:#1E242D;
+  --accent:#E68A4D; --accent-ink:#161206; --accent-dim:#E68A4D1F;
+  --ok:#47C08D; --warn:#E5B34D; --crit:#ED6379; --info:#5FA9E0;
+  --ok-bg:#47C08D18; --warn-bg:#E5B34D16; --crit-bg:#ED637916; --info-bg:#5FA9E016;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 12px 32px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);
+  font-size:16px;line-height:1.62;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
+code,kbd,samp{font-family:var(--mono);font-size:.88em}
+h1,h2,h3,h4{text-wrap:balance;line-height:1.18;font-weight:700}
+
+/* ---- shell ---- */
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+.grid{display:grid;grid-template-columns:232px minmax(0,1fr);gap:56px;align-items:start}
+@media(max-width:920px){.grid{grid-template-columns:1fr;gap:0}}
+
+/* ---- table of contents ---- */
+.toc{position:sticky;top:0;max-height:100vh;overflow-y:auto;padding:28px 0 40px;font-family:var(--mono)}
+@media(max-width:920px){.toc{position:static;max-height:none;border-bottom:1px solid var(--line);margin-bottom:8px}}
+.toc .brand{font-weight:700;font-size:15px;letter-spacing:.02em;color:var(--ink);display:flex;align-items:center;gap:8px;margin-bottom:2px}
+.toc .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px var(--accent-dim)}
+.toc .ver{font-size:11px;color:var(--faint);letter-spacing:.08em;text-transform:uppercase;margin-bottom:20px}
+.toc a{display:block;color:var(--muted);font-size:12.5px;padding:5px 10px;border-left:2px solid var(--line);margin-left:2px;letter-spacing:.01em}
+.toc a:hover{color:var(--ink);border-left-color:var(--accent);text-decoration:none;background:var(--panel2)}
+.toc a .n{color:var(--faint);margin-right:8px;font-size:11px}
+.toc .grp{font-size:10.5px;text-transform:uppercase;letter-spacing:.12em;color:var(--faint);margin:18px 0 6px 12px}
+
+main{padding:28px 0 96px;min-width:0}
+
+/* ---- hero ---- */
+.hero{position:relative;border:1px solid var(--line);border-radius:16px;background:
+  radial-gradient(120% 140% at 88% -10%,var(--accent-dim),transparent 55%),var(--panel);
+  padding:38px 36px 34px;overflow:hidden;box-shadow:var(--shadow)}
+.hero::before{content:"";position:absolute;inset:0;background-image:
+  repeating-linear-gradient(0deg,transparent 0 3px,var(--line2) 3px 4px);
+  opacity:.5;mask:linear-gradient(180deg,transparent,#000 40%,transparent);pointer-events:none}
+.hero>*{position:relative}
+.eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:600}
+.hero h1{font-family:var(--mono);font-size:clamp(30px,5vw,46px);letter-spacing:-.01em;margin:.35em 0 .28em;font-weight:700}
+.hero .lede{font-size:18px;color:var(--muted);max-width:60ch;margin:0}
+.hero .sub{font-size:14.5px;color:var(--faint);max-width:64ch;margin:12px 0 0}
+.statrow{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);
+  border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:26px}
+@media(max-width:620px){.statrow{grid-template-columns:repeat(2,1fr)}}
+.statrow .s{background:var(--panel);padding:16px 18px}
+.statrow .v{font-family:var(--mono);font-size:22px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+.statrow .k{font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:var(--faint);margin-top:3px}
+.statrow .v small{color:var(--accent);font-size:13px;font-weight:600}
+
+/* ---- sections ---- */
+section{margin-top:58px;scroll-margin-top:20px}
+.sechead{display:flex;align-items:baseline;gap:14px;border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:24px}
+.sechead .num{font-family:var(--mono);font-size:13px;color:var(--accent);font-weight:700;letter-spacing:.05em}
+.sechead h2{font-size:24px;margin:0;letter-spacing:-.01em}
+.sechead .tag{margin-left:auto;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:3px 11px;align-self:center}
+p{margin:0 0 15px;max-width:70ch}
+.lead{font-size:17px;color:var(--muted)}
+strong{color:var(--ink);font-weight:650}
+
+/* ---- panels / cards ---- */
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:22px 24px;box-shadow:var(--shadow)}
+.cards{display:grid;gap:16px}
+.cols-2{grid-template-columns:1fr 1fr}.cols-3{grid-template-columns:repeat(3,1fr)}
+@media(max-width:720px){.cols-2,.cols-3{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+.card h4{margin:0 0 6px;font-size:14.5px;font-family:var(--mono);letter-spacing:.01em}
+.card p{font-size:13.5px;color:var(--muted);margin:0}
+.k-label{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.11em;color:var(--faint);margin-bottom:9px}
+
+/* ---- code ---- */
+pre{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:15px 16px;overflow-x:auto;margin:0 0 15px}
+pre code{font-size:12.8px;line-height:1.65;color:var(--ink)}
+.cmd{color:var(--accent);font-weight:600}
+.flag{color:var(--info)}
+.cmt{color:var(--faint);font-style:italic}
+p code,li code,td code{background:var(--panel2);border:1px solid var(--line);border-radius:5px;padding:.5px 5px;color:var(--ink)}
+
+/* ---- tables ---- */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:11px;box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13.4px;min-width:520px}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line2);vertical-align:top}
+thead th{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);
+  background:var(--panel2);position:sticky;top:0;border-bottom:1px solid var(--line)}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:var(--panel2)}
+td .mono,.mono{font-family:var(--mono)}
+.num{font-variant-numeric:tabular-nums;text-align:right}
+
+/* ---- pills ---- */
+.pill{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:11px;font-weight:600;
+  letter-spacing:.02em;padding:2px 9px;border-radius:20px;border:1px solid;white-space:nowrap}
+.p-ok{color:var(--ok);border-color:var(--ok);background:var(--ok-bg)}
+.p-warn{color:var(--warn);border-color:var(--warn);background:var(--warn-bg)}
+.p-crit{color:var(--crit);border-color:var(--crit);background:var(--crit-bg)}
+.p-info{color:var(--info);border-color:var(--info);background:var(--info-bg)}
+.p-dim{color:var(--muted);border-color:var(--line)}
+
+/* ---- callout ---- */
+.note{border-left:3px solid var(--accent);background:var(--accent-dim);border-radius:0 10px 10px 0;
+  padding:13px 16px;margin:0 0 15px;font-size:14px;color:var(--ink)}
+.note.warn{border-left-color:var(--warn);background:var(--warn-bg)}
+.note.crit{border-left-color:var(--crit);background:var(--crit-bg)}
+.note b{font-family:var(--mono);font-size:12px;letter-spacing:.04em;text-transform:uppercase;display:block;margin-bottom:3px}
+
+/* ============ ARCHITECTURE DIAGRAM ============ */
+.arch{display:flex;flex-direction:column;gap:0;font-family:var(--mono)}
+.arch .split{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);
+  border-radius:10px 10px 0 0;overflow:hidden;font-size:11px}
+.arch .split div{background:var(--panel2);padding:8px 14px;color:var(--muted);letter-spacing:.05em;text-transform:uppercase}
+.arch .split div b{color:var(--ink)}
+.layer{border:1px solid var(--line);border-top:none;background:var(--panel);padding:14px 16px;position:relative}
+.layer:last-of-type{border-radius:0 0 10px 10px}
+.layer .lt{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.layer .lt .badge{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.layer .lt .desc{font-size:11.5px;color:var(--faint);font-family:var(--sans)}
+.chiprow{display:flex;flex-wrap:wrap;gap:7px}
+.chip{font-size:11.5px;background:var(--panel2);border:1px solid var(--line);border-radius:7px;padding:4px 10px;color:var(--ink)}
+.chip.accent{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
+.chip.dim{color:var(--faint)}
+.arch .flow{text-align:center;color:var(--faint);font-size:15px;padding:3px 0;line-height:1}
+.corein{margin-top:2px;border:1px dashed var(--accent);border-radius:10px;background:var(--accent-dim);padding:12px 16px}
+.corein .lt .badge{color:var(--accent)}
+
+/* ============ LADDER DIAGRAM ============ */
+.ladder{position:relative;display:flex;flex-direction:column;gap:7px;padding-left:8px}
+.rung{display:grid;grid-template-columns:26px 1fr auto;align-items:center;gap:14px;
+  background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:9px 14px 9px 8px;position:relative}
+.rung .rn{font-family:var(--mono);font-size:11px;color:var(--faint);text-align:center;font-variant-numeric:tabular-nums}
+.rung .rname{font-family:var(--mono);font-size:13px;color:var(--ink);font-weight:600}
+.rung .rmeta{font-size:11.5px;color:var(--muted);font-family:var(--sans)}
+.rung .cost{display:flex;gap:3px;align-items:center}
+.cost i{width:6px;height:15px;border-radius:2px;background:var(--line);display:block}
+.cost.c1 i:nth-child(-n+1),.cost.c2 i:nth-child(-n+2),.cost.c3 i:nth-child(-n+3),.cost.c4 i:nth-child(-n+4),.cost.c5 i:nth-child(-n+5){background:var(--accent)}
+.rung.gate{border-style:dashed;border-color:var(--warn)}
+.rung.gate .rname{color:var(--warn)}
+.rung.fb{border-color:var(--info);background:var(--info-bg)}
+.rung.fb .rname{color:var(--info)}
+.rung .tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:3px}
+.mini{font-family:var(--mono);font-size:9.5px;letter-spacing:.03em;padding:1px 6px;border-radius:10px;border:1px solid var(--line);color:var(--faint)}
+.mini.acc{color:var(--accent);border-color:var(--accent)}
+.ladder-legend{display:flex;flex-wrap:wrap;gap:16px;margin-top:14px;font-size:12px;color:var(--muted);font-family:var(--mono)}
+.ladder-legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:11px;height:11px;border-radius:3px;display:inline-block}
+
+/* ============ LOOP DIAGRAM ============ */
+.loop svg{width:100%;height:auto;display:block}
+.loop text{font-family:var(--mono)}
+
+/* ============ PIPELINE ============ */
+.pipe{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:stretch;gap:0;font-family:var(--mono)}
+@media(max-width:720px){.pipe{grid-template-columns:1fr;gap:8px}.pipe .ar{display:none}}
+.pnode{border:1px solid var(--line);border-radius:11px;background:var(--panel);padding:14px 16px}
+.pnode .h{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:7px}
+.pnode ul{margin:0;padding-left:16px;font-size:11.5px;color:var(--muted);line-height:1.7;font-family:var(--sans)}
+.pnode.host{border-color:var(--info)}
+.pnode.host .h{color:var(--info)}
+.pipe .ar{display:flex;align-items:center;justify-content:center;color:var(--faint);font-size:20px;padding:0 8px;font-family:var(--sans)}
+.pipe .ar small{writing-mode:vertical-lr;font-size:9px;letter-spacing:.1em;text-transform:uppercase;margin-left:4px;color:var(--faint)}
+
+ul.clean{list-style:none;padding:0;margin:0 0 15px;display:grid;gap:9px}
+ul.clean li{display:flex;gap:11px;font-size:14.5px;color:var(--ink);align-items:flex-start}
+ul.clean li::before{content:"▸";color:var(--accent);font-size:12px;margin-top:3px}
+ul.tight{padding-left:20px;margin:0 0 15px}ul.tight li{margin-bottom:5px;font-size:14.5px}
+
+.footer{margin-top:70px;border-top:1px solid var(--line);padding-top:22px;font-family:var(--mono);font-size:12px;color:var(--faint)}
+.footer b{color:var(--muted);font-weight:600}
+.themed{position:fixed;top:14px;right:14px;z-index:20;font-family:var(--mono);font-size:11px;color:var(--muted);
+  background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:5px 12px;cursor:pointer;box-shadow:var(--shadow)}
+.themed:hover{color:var(--ink);border-color:var(--accent)}
+.hr{height:1px;background:var(--line);border:none;margin:26px 0}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:22px}@media(max-width:720px){.two{grid-template-columns:1fr}}
+</style>
+
+<button class="themed" id="tt" aria-label="Toggle color theme">◐ theme</button>
+
+<div class="wrap">
+<div class="grid">
+
+<!-- ============ TOC ============ -->
+<nav class="toc">
+  <div class="brand"><span class="dot"></span>CrackLab</div>
+  <div class="ver">Field Manual · v3 · Aug 2026</div>
+  <a href="#overview"><span class="n">00</span>Overview &amp; verdict</a>
+  <a href="#arch"><span class="n">01</span>Architecture</a>
+  <a href="#flow"><span class="n">02</span>Capture → crack pipeline</a>
+  <a href="#commands"><span class="n">03</span>Command reference</a>
+  <a href="#ladder"><span class="n">04</span>The escalation ladder</a>
+  <a href="#loop"><span class="n">05</span>The learning loop</a>
+  <a href="#gov"><span class="n">06</span>Governance &amp; safety</a>
+  <a href="#arsenal"><span class="n">07</span>Installed arsenal</a>
+  <a href="#abuse"><span class="n">08</span>Abuse-not-crack</a>
+  <a href="#setup"><span class="n">09</span>Setup &amp; SSH</a>
+  <a href="#decisions"><span class="n">10</span>Design decisions</a>
+  <a href="#cheat"><span class="n">11</span>Quick-start</a>
+</nav>
+
+<main>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <div class="eyebrow">GPU hash-cracking rig · operator manual</div>
+  <h1>CrackLab</h1>
+  <p class="lede">An AI-orchestrated password-cracking environment for authorized security work. Deterministic tools do the cracking; a governed operator decides how; the rig learns from every win.</p>
+  <p class="sub">Native-Windows hashcat on an RTX 3080, driven over SSH from Kali. Runs fully offline with no LLM required. Built for HTB / CPTS practice and sanctioned engagements — authorized targets only.</p>
+  <div class="statrow">
+    <div class="s"><div class="v">13</div><div class="k">Core commands</div></div>
+    <div class="s"><div class="v">57.5<small> GH/s</small></div><div class="k">NTLM throughput</div></div>
+    <div class="s"><div class="v">2.2<small>B</small></div><div class="k">weakpass words</div></div>
+    <div class="s"><div class="v">~1<small>B</small></div><div class="k">HIBP hashes</div></div>
+  </div>
+</header>
+
+<!-- ============ 00 OVERVIEW ============ -->
+<section id="overview">
+  <div class="sechead"><span class="num">00</span><h2>Overview &amp; verdict</h2><span class="tag">start here</span></div>
+  <p class="lead">CrackLab turns captured hashes into plaintext, and turns that plaintext into findings — a domain password audit a client actually pays for. It is built around one idea: cracking is a supporting step, and the operator's judgment (what to attack, what to <em>not</em> attack, when to stop) matters more than raw GPU horsepower.</p>
+
+  <div class="two" style="margin:22px 0">
+    <div class="panel">
+      <div class="k-label">The honest verdict</div>
+      <p style="margin:0 0 10px">Three parallel research agents pressure-tested this against real professional practice. The finding: <strong>the software is professional-track</strong> — it independently reinvented ~70% of TrustedSec's <em>hate_crack</em> and the useful half of <em>PACK</em>. The 8&nbsp;GB laptop GPU is the only "toy" part, and that's fine — pros don't lean on a local GPU anyway.</p>
+      <p style="margin:0;color:var(--muted);font-size:14px">Adequate for the fast modes that dominate real internal engagements. Hopeless on slow hashes — where the pro move is to relay / pass-the-hash, or rent cloud GPU, and not crack locally.</p>
+    </div>
+    <div class="panel">
+      <div class="k-label">Tractable here vs. punt to cloud</div>
+      <ul class="clean" style="margin:0">
+        <li><span class="pill p-ok">FAST</span>&nbsp; NTLM · NetNTLMv2 · Kerberoast · AS-REP — crack the weak/medium corporate passwords that are most real wins.</li>
+        <li><span class="pill p-crit">SLOW</span>&nbsp; bcrypt · sha512crypt · DPAPI · LUKS · modern KeePass — don't crack locally; relay / PtH, or burst to an H100.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="note"><b>Scope</b>This rig is a training tool for <strong>authorized targets only</strong> — your HTB lab, the CPTS exam, or a sanctioned engagement. A scope gate refuses every job that isn't declared authorized. Copyrighted lab content and client plaintext never leave the box.</div>
+</section>
+
+<!-- ============ 01 ARCHITECTURE ============ -->
+<section id="arch">
+  <div class="sechead"><span class="num">01</span><h2>Architecture</h2><span class="tag">3 layers + core</span></div>
+  <p class="lead">Three layers, cleanly separated. <strong>Muscle</strong> does the work, <strong>Brain</strong> decides, <strong>Interface</strong> is what you touch. Underneath, a <strong>Deterministic core</strong> can run every capability headless — no LLM, no internet.</p>
+
+  <div class="panel" style="margin:22px 0">
+    <div class="arch">
+      <div class="split">
+        <div><b>KALI VM</b> — capture &amp; extract (client)</div>
+        <div><b>WINDOWS + RTX 3080</b> — GPU crack (host)</div>
+      </div>
+
+      <div class="layer">
+        <div class="lt"><span class="badge">Interface</span><span class="desc">what the operator actually invokes</span></div>
+        <div class="chiprow">
+          <span class="chip accent">/crack</span><span class="chip accent">/forge</span><span class="chip accent">/hashid</span>
+          <span class="chip">CLAUDE.md operator contract</span><span class="chip">SSH session from Kali</span>
+        </div>
+      </div>
+      <div class="flow">▲ &nbsp; plain-English intent &nbsp; ▼</div>
+      <div class="layer">
+        <div class="lt"><span class="badge">Brain</span><span class="desc">chooses strategy · pluggable · optional</span></div>
+        <div class="chiprow">
+          <span class="chip accent">claude-code <span style="opacity:.7">(default, no API cost)</span></span>
+          <span class="chip dim">api <span style="opacity:.7">(seam ready)</span></span>
+          <span class="chip dim">ollama <span style="opacity:.7">(offline, seam ready)</span></span>
+        </div>
+      </div>
+      <div class="flow">▲ &nbsp; calls the core · reads the trophy log &nbsp; ▼</div>
+      <div class="layer">
+        <div class="lt"><span class="badge">Muscle</span><span class="desc">deterministic, fast, dumb, reliable</span></div>
+        <div class="chiprow">
+          <span class="chip">hashcat 7.1.2</span><span class="chip">John *2john</span><span class="chip">name-that-hash</span>
+          <span class="chip">forge.py</span><span class="chip">rulegen.py</span><span class="chip">analysis.py</span>
+          <span class="chip">hibp.py</span><span class="chip">triage.py</span><span class="chip">PRINCE</span>
+        </div>
+      </div>
+
+      <div class="corein">
+        <div class="lt"><span class="badge">Deterministic core — cracklab.py</span><span class="desc" style="font-family:var(--sans)">the floor that always works</span></div>
+        <p style="margin:0;font-size:12.5px;color:var(--muted);font-family:var(--sans)">Identify · extract · triage · forge · estimate · climb the ladder · report · learn — <strong>every one runs offline with zero Brain</strong>. The skills orchestrate the core; they never own logic the core can't also run.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="cards cols-3">
+    <div class="card"><h4>Why native Windows</h4><p>The GPU only runs at full speed natively. A VM can't touch the 3080 without PCI passthrough — so Windows owns the card and Kali is the client over SSH.</p></div>
+    <div class="card"><h4>Why pluggable Brain</h4><p>Intelligence isn't welded to one LLM. One adapter seam swaps <code>claude-code</code> for a keyed API or a local Ollama model later — no refactor. <a href="#decisions">ADR-0002</a>.</p></div>
+    <div class="card"><h4>Why a deterministic core</h4><p>Cracking must never depend on an LLM being reachable. The core self-orchestrates the mechanical ladder with no Brain at all.</p></div>
+  </div>
+</section>
+
+<!-- ============ 02 PIPELINE ============ -->
+<section id="flow">
+  <div class="sechead"><span class="num">02</span><h2>Capture → crack pipeline</h2><span class="tag">the loop you repeat</span></div>
+  <p class="lead">Kali captures and extracts; the material crosses over by <code>scp</code>; Windows cracks on the GPU; results become a report — and cracked plaintext feeds back as new rules and masks.</p>
+
+  <div class="panel" style="margin:22px 0">
+    <div class="pipe">
+      <div class="pnode"><div class="h">1 · Kali — capture</div>
+        <ul><li>secretsdump / NTDS</li><li>Responder · ntlmrelayx</li><li>GetUserSPNs · GetNPUsers</li><li>*2john · DPAPI · GPP · LAPS</li></ul></div>
+      <div class="ar">→<small>scp</small></div>
+      <div class="pnode host"><div class="h">2 · Windows — crack</div>
+        <ul><li>triage → crackable subset</li><li>identify / extract mode</li><li>forge targeted wordlist</li><li>auto: climb the ladder</li></ul></div>
+      <div class="ar">→</div>
+      <div class="pnode"><div class="h">3 · deliver</div>
+        <ul><li>report — CPTS appendix</li><li>masks — feedback .hcmask</li><li>hibp — breached-pw audit</li><li>trophy log · learned.rule</li></ul></div>
+    </div>
+  </div>
+  <div class="note"><b>Feedback</b>Stage 3 loops back into Stage 2: cracked plaintext becomes a reuse wordlist, a frequency <code>.hcmask</code>, and mined rules the next run climbs with. See <a href="#loop">the learning loop</a>.</div>
+</section>
+
+<!-- ============ 03 COMMANDS ============ -->
+<section id="commands">
+  <div class="sechead"><span class="num">03</span><h2>Command reference</h2><span class="tag">python core\cracklab.py</span></div>
+  <p class="lead">Thirteen subcommands. Everything runs headless; the skills just orchestrate them. Cracking commands require <code>--scope</code>.</p>
+
+  <div class="tbl-wrap" style="margin:22px 0">
+    <table>
+      <thead><tr><th>Command</th><th>Does</th><th>Key flags</th></tr></thead>
+      <tbody>
+        <tr><td><span class="mono cmd">identify</span></td><td>Hash → hashcat mode. Provenance first, then content prefix, then name-that-hash shortlist.</td><td class="mono"><span class="flag">--provenance</span></td></tr>
+        <tr><td><span class="mono cmd">extract</span></td><td>File → hash via the <code>*2john</code> front door (KeePass / Office / SSH key / BitLocker).</td><td class="mono"><span class="flag">--out</span></td></tr>
+        <tr><td><span class="mono cmd">triage</span> <span class="pill p-crit">AD</span></td><td>Strip machine accounts + krbtgt (abuse, don't crack), flag blanks &amp; reused hashes; emit the crack-worthy subset.</td><td class="mono"><span class="flag">--out</span></td></tr>
+        <tr><td><span class="mono cmd">forge</span></td><td>OSINT terms → targeted wordlist (case · leet · years · specials · combos).</td><td class="mono"><span class="flag">--terms --years --specials</span></td></tr>
+        <tr><td><span class="mono cmd">estimate</span></td><td>Per-rung keyspace ETA before you commit GPU time — candidates ÷ benchmarked speed.</td><td class="mono"><span class="flag">--mode --targeted</span></td></tr>
+        <tr><td><span class="mono cmd">auto</span> <span class="pill p-info">main</span></td><td>Climb the governed escalation ladder within the cap, with a cracked-feedback pass.</td><td class="mono"><span class="flag">--scope --username --cap --detach</span></td></tr>
+        <tr><td><span class="mono cmd">manual</span></td><td>One chosen attack — you pick mode, wordlist, rules.</td><td class="mono"><span class="flag">--mode --wordlist --rules</span></td></tr>
+        <tr><td><span class="mono cmd">report</span></td><td>Pipal-style CPTS appendix: cracked %, complexity, reuse, <code>password==username</code>.</td><td class="mono"><span class="flag">--mode --username --context</span></td></tr>
+        <tr><td><span class="mono cmd">masks</span></td><td>Frequency-sorted <code>.hcmask</code> from what cracked → feed back with <code>-a 3</code>.</td><td class="mono"><span class="flag">--mode --top</span></td></tr>
+        <tr><td><span class="mono cmd">hibp</span> <span class="pill p-crit">AD</span></td><td>Compare NT hashes vs. the ~1B HIBP corpus — breached-password finding, zero cracking.</td><td class="mono"><span class="flag">--scope --file</span></td></tr>
+        <tr><td><span class="mono cmd">learn</span></td><td>Re-mine <code>learned.rule</code> from cracked plaintext (the strange-loop, on demand).</td><td class="mono"><span class="flag">--scope --show</span></td></tr>
+        <tr><td><span class="mono cmd">status</span></td><td>State of detached jobs (survive SSH disconnect).</td><td class="mono">—</td></tr>
+        <tr><td><span class="mono cmd">trophies</span></td><td>Read the win log — which rung &amp; pattern cracked what.</td><td class="mono"><span class="flag">--context</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="k-label">A full engagement, start to finish</div>
+  <pre><code><span class="cmt"># on Kali: capture, then scp the hash file to the rig's hashes\ folder</span>
+<span class="cmt"># on Windows over SSH:</span>
+python core\cracklab.py <span class="cmd">triage</span> hashes\ntds.txt <span class="flag">--out</span> hashes\crackable.txt
+python core\cracklab.py <span class="cmd">forge</span> <span class="flag">--terms</span> acme,london <span class="flag">--years</span> 2018-2026 <span class="flag">--out</span> wordlists\acme.txt
+python core\cracklab.py <span class="cmd">estimate</span> hashes\crackable.txt <span class="flag">--mode</span> 1000 <span class="flag">--targeted</span> wordlists\acme.txt <span class="flag">--username</span>
+python core\cracklab.py <span class="cmd">auto</span> hashes\crackable.txt <span class="flag">--scope</span> engagement:acme <span class="flag">--mode</span> 1000 <span class="flag">--username --targeted</span> wordlists\acme.txt <span class="flag">--cap</span> 3600
+python core\cracklab.py <span class="cmd">report</span> hashes\crackable.txt <span class="flag">--mode</span> 1000 <span class="flag">--username --context</span> ad
+python core\cracklab.py <span class="cmd">hibp</span>   hashes\ntds.txt <span class="flag">--scope</span> engagement:acme <span class="flag">--context</span> ad</code></pre>
+</section>
+
+<!-- ============ 04 LADDER ============ -->
+<section id="ladder">
+  <div class="sechead"><span class="num">04</span><h2>The escalation ladder</h2><span class="tag">auto mode</span></div>
+  <p class="lead">Automatic mode climbs an ordered sequence of strategies — cheapest and most-likely first, most expensive last — stopping the moment every hash is cracked or the cap is hit. This is the fast-hash ladder; conditional rungs appear only when their input exists.</p>
+
+  <div class="panel" style="margin:22px 0">
+    <div class="ladder">
+      <div class="rung"><span class="rn">01</span><div><div class="rname">usernames + rules</div><div class="rmeta">password == username &amp; cross-user reuse · tiny keyspace, huge signal</div><div class="tags"><span class="mini acc">if --username</span></div></div><div class="cost c1"><i></i><i></i><i></i><i></i><i></i></div></div>
+      <div class="rung"><span class="rn">02</span><div><div class="rname">targeted — straight</div><div class="rmeta">your OSINT-forged wordlist, no rules</div><div class="tags"><span class="mini acc">if --targeted</span></div></div><div class="cost c1"><i></i><i></i><i></i><i></i><i></i></div></div>
+      <div class="rung"><span class="rn">03</span><div><div class="rname">rockyou — straight</div><div class="rmeta">14.3M real passwords, no rules — instant on fast modes</div></div><div class="cost c1"><i></i><i></i><i></i><i></i><i></i></div></div>
+      <div class="rung"><span class="rn">04</span><div><div class="rname">rockyou + best66</div><div class="rmeta">cheap high-yield mangling rules</div></div><div class="cost c2"><i></i><i></i><i></i><i></i><i></i></div></div>
+      <div class="rung"><span class="rn">05</span><div><div class="rname">rockyou + learned</div><div class="rmeta">rules mined from your own past cracks</div><div class="tags"><span class="mini acc">if learned.rule</span></div></div><div class="cost c2"><i></i><i></i><i></i><i></i><i></i></div></div>
+      <div class="rung"><span class="rn">06</span><div><div class="rname">rockyou + OneRuleToRuleThemStill</div><div class="rmeta">48,439 tuned rules — the workhorse pass</div></div><div class="cost c3"><i></i><i></i><i></i><i></i><i></i></div></div>
+      <div class="rung"><span class="rn">07</span><div><div class="rname">targeted + OneRule &nbsp;·&nbsp; targeted + learned</div><div class="rmeta">your wordlist under full mangling</div><div class="tags"><span class="mini acc">if --targeted</span></div></div><div class="cost c3"><i></i><i></i><i></i><i></i><i></i></div></div>
+      <div class="rung"><span class="rn">08</span><div><div class="rname">weakpass_4 + OneRule</div><div class="rmeta">2.19B curated passwords × 48k rules · ~31 min full pass</div><div class="tags"><span class="mini acc">if fetched</span></div></div><div class="cost c4"><i></i><i></i><i></i><i></i><i></i></div></div>
+      <div class="rung"><span class="rn">09</span><div><div class="rname">rockyou + clem9669-medium</div><div class="rmeta">179k rules — deeper mangling</div></div><div class="cost c4"><i></i><i></i><i></i><i></i><i></i></div></div>
+      <div class="rung"><span class="rn">10</span><div><div class="rname">rockyou + hybrid year / year-bang</div><div class="rmeta">word + <code>?d?d?d?d</code> and <code>+?s</code> — the "Summer2024!" majority</div></div><div class="cost c4"><i></i><i></i><i></i><i></i><i></i></div></div>
+      <div class="rung fb"><span class="rn">↺</span><div><div class="rname">cracked-feedback pass</div><div class="rmeta">feed cracked plaintext back + OneRule — hunts reuse &amp; derivations</div></div><div class="cost c3"><i></i><i></i><i></i><i></i><i></i></div></div>
+      <div class="rung gate"><span class="rn">⚠</span><div><div class="rname">PRINCE &nbsp;·&nbsp; mask brute-force</div><div class="rmeta">passphrases &amp; full keyspace — gated, never runs unattended</div><div class="tags"><span class="mini">--allow-bruteforce</span></div></div><div class="cost c5"><i></i><i></i><i></i><i></i><i></i></div></div>
+    </div>
+    <div class="ladder-legend">
+      <span><i class="sw" style="background:var(--accent)"></i>cost / GPU-time</span>
+      <span><i class="sw" style="background:var(--info)"></i>feedback loop</span>
+      <span><i class="sw" style="background:var(--warn);border:1px dashed var(--warn)"></i>gated — explicit opt-in</span>
+    </div>
+  </div>
+
+  <div class="two">
+    <div class="card"><h4>Stops early, always</h4><p>The climb halts the instant every hash is cracked — you rarely reach the expensive rungs. Each rung is capped by the remaining wall-clock budget.</p></div>
+    <div class="card"><h4>Slow hashes auto-trim</h4><p>bcrypt, sha512crypt, DCC2, WPA and friends skip the big rule sets and hybrids entirely — only usernames, targeted, rockyou, and the tiny <code>clem9669-small</code> run. No feedback pass on slow modes.</p></div>
+  </div>
+</section>
+
+<!-- ============ 05 LOOP ============ -->
+<section id="loop">
+  <div class="sechead"><span class="num">05</span><h2>The learning loop</h2><span class="tag">RuleGen · strange-loop</span></div>
+  <p class="lead">Every win rewrites the ruleset the next run climbs with. CrackLab reverse-engineers each cracked password into the hashcat rule that made it, ranks by frequency, and writes <code>learned.rule</code> — injected as an early ladder rung. Outputs at one level become inputs at a higher level.</p>
+
+  <div class="panel loop" style="margin:22px 0">
+    <svg viewBox="0 0 760 232" role="img" aria-label="The learning loop: cracked passwords are reverse-engineered into rules that feed the next run">
+      <defs>
+        <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" style="fill:var(--accent)"/></marker>
+      </defs>
+      <!-- nodes -->
+      <g font-size="12" text-anchor="middle" style="fill:var(--ink)">
+        <g><rect x="24" y="86" width="150" height="60" rx="11" style="fill:var(--panel2);stroke:var(--ok)"/>
+          <text x="99" y="110" font-weight="700" style="fill:var(--ok)">cracked pw</text><text x="99" y="128" font-size="10.5" style="fill:var(--muted)">Summer2024!</text></g>
+        <g><rect x="228" y="86" width="150" height="60" rx="11" style="fill:var(--panel2);stroke:var(--line)"/>
+          <text x="303" y="110" font-weight="700">reverse-mangle</text><text x="303" y="128" font-size="10.5" style="fill:var(--muted)">base + case + suffix</text></g>
+        <g><rect x="432" y="86" width="150" height="60" rx="11" style="fill:var(--accent-dim);stroke:var(--accent)"/>
+          <text x="507" y="110" font-weight="700" style="fill:var(--accent)">learned.rule</text><text x="507" y="128" font-size="10.5" font-family="var(--mono)" style="fill:var(--muted)">c $2 $0 $2 $4 $!</text></g>
+        <g><rect x="612" y="86" width="126" height="60" rx="11" style="fill:var(--panel2);stroke:var(--info)"/>
+          <text x="675" y="110" font-weight="700" style="fill:var(--info)">next run</text><text x="675" y="128" font-size="10.5" style="fill:var(--muted)">early rung</text></g>
+        <!-- governance -->
+        <g><rect x="228" y="180" width="354" height="34" rx="8" stroke-dasharray="4 3" style="fill:var(--warn-bg);stroke:var(--warn)"/>
+          <text x="405" y="201" font-size="10.5" font-weight="600" style="fill:var(--warn)">GOVERNANCE GATE — freq ≥ 2 · cap 200/run · scope-isolated · audit-logged</text></g>
+      </g>
+      <!-- arrows -->
+      <g stroke-width="1.6" marker-end="url(#ah)" style="fill:none;stroke:var(--accent)">
+        <path d="M176 116 L224 116"/>
+        <path d="M380 116 L428 116"/>
+        <path d="M584 116 L609 116"/>
+      </g>
+      <!-- return arc -->
+      <path d="M675 84 C 675 34, 99 34, 99 84" stroke-width="1.6" marker-end="url(#ah)" stroke-dasharray="5 4" style="fill:none;stroke:var(--info)"/>
+      <text x="387" y="28" font-size="10.5" text-anchor="middle" font-family="var(--mono)" style="fill:var(--info)">cracks more of the same shape → more wins → more rules</text>
+      <!-- gate tick -->
+      <path d="M405 180 L405 148" stroke-width="1.4" stroke-dasharray="3 3" style="fill:none;stroke:var(--warn)"/>
+    </svg>
+  </div>
+
+  <div class="cards cols-3">
+    <div class="card"><h4>Deterministic, no LLM</h4><p>Rule derivation is pure Python. The loop runs headless and offline, and is reproducible — the same cracks always mine the same rules.</p></div>
+    <div class="card"><h4>Governed by design</h4><p>Never learns from a single datum (<code>freq ≥ 2</code>), caps 200 rules/run, regenerates from scratch each job — it can't grow unbounded or drift. <a href="#decisions">ADR-0003</a>.</p></div>
+    <div class="card"><h4>Scope-isolated</h4><p>Training scopes feed the shared ruleset; <code>engagement</code> scopes learn into an isolated file with the example plaintext redacted — client structure never leaks.</p></div>
+  </div>
+  <p style="margin-top:16px;color:var(--muted);font-size:14px">This is the design pattern from Hofstadter's <em>Gödel, Escher, Bach</em> made concrete: a self-modifying system with a governance gate that stops it from running away.</p>
+</section>
+
+<!-- ============ 06 GOVERNANCE ============ -->
+<section id="gov">
+  <div class="sechead"><span class="num">06</span><h2>Governance &amp; safety</h2><span class="tag">non-negotiable</span></div>
+  <p class="lead">The guardrails are the point. They mirror real engagement discipline — and they're enforced by the core, not left to the operator's memory.</p>
+
+  <div class="cards cols-2" style="margin-top:22px">
+    <div class="card"><h4><span class="pill p-crit">gate</span> Scope, first &amp; always</h4><p>Every crack requires <code>--scope htb|cpts|lab|engagement</code>. No scope, no job — the core refuses. There is no clever way past it.</p></div>
+    <div class="card"><h4><span class="pill p-warn">cap</span> 30-minute wall-clock</h4><p>Auto mode is time-boxed by default. Extend deliberately (<code>--cap 3600</code>); each rung gets only the remaining budget.</p></div>
+    <div class="card"><h4><span class="pill p-warn">gate</span> Brute-force is opt-in</h4><p>Mask and PRINCE never run unattended. Auto stops at the last dictionary rung and <em>recommends</em> brute-force as a human decision.</p></div>
+    <div class="card"><h4><span class="pill p-info">guard</span> GPU thermal abort</h4><p>Every rung carries <code>--hwmon-temp-abort</code> (default 90 °C) — a laptop card can't cook itself on a long run.</p></div>
+    <div class="card"><h4><span class="pill p-ok">iso</span> Per-engagement isolation</h4><p>Each <code>engagement:label</code> gets its own potfile and learned ruleset. Client A's plaintext never contaminates client B's stats.</p></div>
+    <div class="card"><h4><span class="pill p-ok">iso</span> Redaction &amp; survival</h4><p>Engagement scopes auto-redact plaintext from the trophy log. Long jobs run <code>--detach</code> and survive an SSH drop; reconnect and check <code>status</code>.</p></div>
+  </div>
+</section>
+
+<!-- ============ 07 ARSENAL ============ -->
+<section id="arsenal">
+  <div class="sechead"><span class="num">07</span><h2>Installed arsenal</h2><span class="tag">on the rig now</span></div>
+
+  <div class="two" style="margin-top:22px">
+    <div>
+      <div class="k-label">Wordlists &amp; corpora</div>
+      <div class="tbl-wrap">
+        <table><thead><tr><th>List</th><th class="num">Size</th><th class="num">Entries</th></tr></thead><tbody>
+          <tr><td class="mono">rockyou.txt</td><td class="num">133 MB</td><td class="num">14.3 M</td></tr>
+          <tr><td class="mono">weakpass_4.txt</td><td class="num">22.5 GB</td><td class="num">2.19 B</td></tr>
+          <tr><td class="mono">HIBP pwned-ntlm</td><td class="num">70 GB</td><td class="num">~1 B</td></tr>
+        </tbody></table>
+      </div>
+      <div class="k-label" style="margin-top:20px">Rules</div>
+      <div class="tbl-wrap">
+        <table><thead><tr><th>Ruleset</th><th class="num">Rules</th></tr></thead><tbody>
+          <tr><td class="mono">OneRuleToRuleThemStill</td><td class="num">48,439</td></tr>
+          <tr><td class="mono">clem9669_medium</td><td class="num">179,579</td></tr>
+          <tr><td class="mono">clem9669_small</td><td class="num">386</td></tr>
+          <tr><td class="mono">best66 · learned.rule</td><td class="num">bundled · mined</td></tr>
+        </tbody></table>
+      </div>
+    </div>
+    <div>
+      <div class="k-label">GPU throughput — RTX 3080 Laptop (benchmarked)</div>
+      <div class="tbl-wrap">
+        <table><thead><tr><th>Mode</th><th>Hash</th><th class="num">Speed</th></tr></thead><tbody>
+          <tr><td class="mono">1000</td><td>NTLM</td><td class="num">57.5 GH/s</td></tr>
+          <tr><td class="mono">0</td><td>MD5</td><td class="num">33.7 GH/s</td></tr>
+          <tr><td class="mono">5600</td><td>NetNTLMv2</td><td class="num">2.36 GH/s</td></tr>
+          <tr><td class="mono">13100</td><td>Kerberoast</td><td class="num">757 MH/s</td></tr>
+          <tr><td class="mono">18200</td><td>AS-REP</td><td class="num">750 MH/s</td></tr>
+          <tr><td class="mono">2100</td><td>DCC2</td><td class="num">446 kH/s</td></tr>
+          <tr><td class="mono">22000</td><td>WPA</td><td class="num">540 kH/s</td></tr>
+          <tr><td class="mono">1800</td><td>sha512crypt</td><td class="num">212 kH/s</td></tr>
+          <tr><td class="mono">3200</td><td>bcrypt</td><td class="num">61 kH/s</td></tr>
+        </tbody></table>
+      </div>
+      <p style="font-size:12.5px;color:var(--faint);margin-top:10px">Cached in <code>loot\benchmarks.json</code> — this is what <code>estimate</code> divides keyspace by. The cliff from GH/s to kH/s is exactly why slow hashes leave the local box.</p>
+    </div>
+  </div>
+  <div class="note" style="margin-top:20px"><b>Generators</b>PRINCE (<code>pp64</code>) is installed and wired as a gated rung. kwprocessor is installed but keyboard-walk generation is dormant — this build only emits junk-short walks; drop a tuned <code>wordlists\keywalks.txt</code> in and the rung auto-activates.</div>
+</section>
+
+<!-- ============ 08 ABUSE ============ -->
+<section id="abuse">
+  <div class="sechead"><span class="num">08</span><h2>Abuse-not-crack</h2><span class="tag">tier 3 · no GPU</span></div>
+  <p class="lead">The most valuable credential material often needs no cracking at all. <code>triage</code> keeps the GPU honest, and Kali-side helpers recover secrets by decryption or read.</p>
+
+  <div class="two" style="margin-top:22px">
+    <div class="panel">
+      <div class="k-label">triage verdicts</div>
+      <ul class="clean" style="margin:0">
+        <li><span class="pill p-crit">abuse</span> machine accounts (<code>$</code>) — ~random 120-char → pass-the-hash, never crack</li>
+        <li><span class="pill p-crit">abuse</span> krbtgt — golden-ticket material, never crack</li>
+        <li><span class="pill p-warn">flag</span> blank NT hash — already a critical finding</li>
+        <li><span class="pill p-warn">flag</span> reused hashes — crack once, applies to all</li>
+        <li><span class="pill p-info">note</span> AES-only Kerberos — slow; request an RC4 downgrade</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <div class="k-label">Kali helper scripts (kali\)</div>
+      <ul class="clean" style="margin:0">
+        <li><code>dpapi-harvest.sh</code> — browser / RDP / Wi-Fi / vault creds via the domain backup key (DonPAPI · hekatomb)</li>
+        <li><code>gpp-decrypt.sh</code> — GPP cpassword, reversed with Microsoft's published AES key</li>
+        <li><code>laps-read.sh</code> — cleartext local-admin passwords with the right ACL</li>
+        <li><code>capture-cheatsheet.md</code> — the whole capture → hashcat handoff</li>
+      </ul>
+    </div>
+  </div>
+  <p style="margin-top:16px;color:var(--muted);font-size:14px">These live on Kali by design — impacket, netexec and DonPAPI belong on the capture host, not the cracking rig. CrackLab's job is the GPU and the deliverable.</p>
+</section>
+
+<!-- ============ 09 SETUP ============ -->
+<section id="setup">
+  <div class="sechead"><span class="num">09</span><h2>Setup &amp; SSH</h2><span class="tag">connect &amp; fetch</span></div>
+
+  <div class="two" style="margin-top:22px">
+    <div>
+      <div class="k-label">Connect from Kali</div>
+      <pre><code><span class="cmt"># pick the IP for your Kali VM network mode</span>
+ssh user@RIG_IP   <span class="cmt"># NAT (default)</span>
+ssh user@RIG_IP   <span class="cmt"># host-only</span>
+ssh user@RIG_IP   <span class="cmt"># bridged</span></code></pre>
+      <div class="note warn"><b>Two gotchas</b>The login is your <strong>Microsoft-account password</strong>, not the Hello PIN. And <code><user></code> is an admin, so public keys go in <code>C:\ProgramData\ssh\administrators_authorized_keys</code> with locked ACLs — not <code>~\.ssh</code>. <code>scripts\Harden-And-Setup-Admin.ps1</code> does both.</div>
+    </div>
+    <div>
+      <div class="k-label">Optional add-ons — fetch on demand</div>
+      <pre><code><span class="cmt"># the ladder auto-detects each once present</span>
+powershell -File scripts\fetch-hibp.ps1
+powershell -File scripts\fetch-wordlists.ps1 <span class="flag">-Url</span> &lt;weakpass&gt;
+powershell -File scripts\fetch-tools.ps1     <span class="cmt"># PRINCE</span></code></pre>
+      <div class="card"><h4>Already installed</h4><p>weakpass_4 · HIBP NTLM corpus · PRINCE · OneRuleToRuleThemStill · clem9669 · benchmark cache · .NET SDK for the HIBP downloader. All fetch scripts are self-correcting on re-run.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 10 DECISIONS ============ -->
+<section id="decisions">
+  <div class="sechead"><span class="num">10</span><h2>Design decisions</h2><span class="tag">docs\adr</span></div>
+  <div class="cards cols-3" style="margin-top:22px">
+    <div class="card"><h4>ADR-0001</h4><p><strong>Claude Code as Brain, no API.</strong> The terminal session <em>is</em> the operator — no monolithic app welding an LLM into the cracking logic, no API cost.</p></div>
+    <div class="card"><h4>ADR-0002</h4><p><strong>Pluggable Brain + offline core.</strong> Intelligence sits behind one adapter seam; the deterministic core cracks with no LLM reachable.</p></div>
+    <div class="card"><h4>ADR-0003</h4><p><strong>Self-modifying learned rules.</strong> The strange-loop, with a governance gate against runaway growth, drift, overfitting, and cross-client leakage.</p></div>
+  </div>
+
+  <hr class="hr">
+  <div class="two">
+    <div>
+      <div class="k-label">Deliberately skipped</div>
+      <ul class="tight" style="color:var(--muted)">
+        <li>Hashtopolis — no cluster (single node)</li>
+        <li>Web GUIs (CrackerJack / Mentalist) — headless by design</li>
+        <li>rockyou2021/2024 giant dumps — bad hits-per-GB</li>
+        <li>PassGAN / ML candidate-gen — debunked; a best64 ruleset beats it</li>
+      </ul>
+    </div>
+    <div>
+      <div class="k-label">Escape hatch / deferred</div>
+      <ul class="tight" style="color:var(--muted)">
+        <li>Cloud burst (vast.ai / NPK) — rent an H100 for the one slow-hash job that needs it</li>
+        <li><code>api</code> / <code>ollama</code> Brain backends — seams ready</li>
+        <li>Parallel multi-hash jobs</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 11 CHEAT ============ -->
+<section id="cheat">
+  <div class="sechead"><span class="num">11</span><h2>Quick-start</h2><span class="tag">the 80% path</span></div>
+  <div class="two" style="margin-top:22px">
+    <div class="panel">
+      <div class="k-label">Got a hash, don't know the type</div>
+      <pre style="margin-bottom:0"><code>python core\cracklab.py <span class="cmd">identify</span> h.txt
+python core\cracklab.py <span class="cmd">auto</span> h.txt <span class="flag">--scope</span> htb <span class="flag">--cap</span> 1800</code></pre>
+    </div>
+    <div class="panel">
+      <div class="k-label">Got an NTDS dump + some OSINT</div>
+      <pre style="margin-bottom:0"><code>python core\cracklab.py <span class="cmd">triage</span> ntds.txt <span class="flag">--out</span> c.txt
+python core\cracklab.py <span class="cmd">forge</span> <span class="flag">--terms</span> acme <span class="flag">--out</span> w.txt
+python core\cracklab.py <span class="cmd">auto</span> c.txt <span class="flag">--scope</span> cpts <span class="flag">--username --targeted</span> w.txt
+python core\cracklab.py <span class="cmd">report</span> c.txt <span class="flag">--mode</span> 1000 <span class="flag">--username</span></code></pre>
+    </div>
+  </div>
+  <div class="note" style="margin-top:20px"><b>The one rule</b>Never bypass the core with raw hashcat — it's what enforces scope, caps, logging, and learning. If a capability is missing, add it to the core; don't work around it.</div>
+</section>
+
+<div class="footer">
+  <b>CrackLab</b> · GPU hash-cracking rig · v3 · Aug 2026 &nbsp;·&nbsp; authorized targets only — HTB / CPTS / sanctioned engagements &nbsp;·&nbsp; the core is the source of truth
+</div>
+
+</main>
+</div>
+</div>
+
+<script>
+(function(){
+  var b=document.getElementById('tt');
+  function cur(){var e=document.documentElement.getAttribute('data-theme');
+    if(e)return e; return matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';}
+  b.addEventListener('click',function(){
+    var n=cur()==='dark'?'light':'dark';
+    document.documentElement.setAttribute('data-theme',n);
+  });
+})();
+</script>
